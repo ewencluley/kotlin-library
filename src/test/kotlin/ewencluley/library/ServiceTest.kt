@@ -27,4 +27,23 @@ class ServiceTest {
         verify { catalogue.findByIsbn(isbn) }
         verify { library.borrow(book, Service.user) }
     }
+
+    @Test
+    @DisplayName("Given a matching book in the catalogue and borrowing fails, expect failure result")
+    fun givenBookAndBorrowingFails() {
+        val catalogue = mockk<Catalogue>()
+        val library = mockk<Library>()
+
+        val isbn = "978-3-16-148410-0"
+        val book = Book(isbn)
+
+        every { catalogue.findByIsbn(isbn) } returns listOf(book)
+        every { library.borrow(book, Service.user) } returns Library.BorrowResult.Failure("Failed to borrow book")
+
+        val service = Service(catalogue, library)
+        val result = service.borrowBook(isbn)
+        assert(result is Service.Result.BorrowFailure)
+        verify { catalogue.findByIsbn(isbn) }
+        verify { library.borrow(book, Service.user) }
+    }
 }

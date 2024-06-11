@@ -13,9 +13,9 @@ class Service(private val catalogue: Catalogue, private val library: Library) {
         val book = catalogue.findByIsbn(isbn)
             .first()
 
-        when(library.borrow(book, user)) {
-            is Library.BorrowResult.Success -> return Result.BorrowSuccess(book)
-            is Library.BorrowResult.Failure -> TODO("Not implemented")
+        return when(library.borrow(book, user)) {
+            is Library.BorrowResult.Success -> Result.BorrowSuccess(book)
+            is Library.BorrowResult.Failure -> Result.BorrowFailure
         }
     }
 
@@ -27,5 +27,6 @@ class Service(private val catalogue: Catalogue, private val library: Library) {
 
     sealed class Result {
         data class BorrowSuccess(val book: Book) : Result()
+        data object BorrowFailure: Result()
     }
 }
