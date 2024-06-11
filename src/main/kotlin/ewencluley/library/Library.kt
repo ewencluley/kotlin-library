@@ -8,6 +8,6 @@ import ewencluley.library.users.User
  */
 class Library {
     fun borrow(book: Book, user: User) {
-        TODO("Not yet implemented")
+        book.borrowedBy = user
     }
 }
