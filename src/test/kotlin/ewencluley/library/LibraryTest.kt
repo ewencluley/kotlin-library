@@ -32,4 +32,24 @@ class LibraryTest {
 
         assert(user !== book.borrowedBy)
     }
+
+    @Test
+    @DisplayName("Return success result when borrowing has been successful")
+    fun borrowingHasBeenSuccessful() {
+        val book = Book("978-3-16-148410-0")
+        val user = User()
+        val library = Library()
+        val result = library.borrow(book, user)
+        assert(result is Library.BorrowResult.Success)
+    }
+
+    @Test
+    @DisplayName("Return failure result when borrowing has not been successful")
+    fun borrowingHasNotBeenSuccessful() {
+        val book = Book("978-3-16-148410-0", User())
+        val user = User()
+        val library = Library()
+        val result = library.borrow(book, user)
+        assert(result is Library.BorrowResult.Failure)
+    }
 }
