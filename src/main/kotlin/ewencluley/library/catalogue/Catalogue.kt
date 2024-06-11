@@ -5,8 +5,9 @@ package ewencluley.library.catalogue
  *
  * This class provides functionality for storing and finding books
  */
-class Catalogue {
+
+class Catalogue(private val books: List<Book>) {
     fun findByIsbn(isbn: String): List<Book> {
-        return emptyList()
+        return books.filter { it.isbn == isbn }
     }
 }
