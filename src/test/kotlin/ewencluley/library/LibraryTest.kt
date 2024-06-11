@@ -19,4 +19,17 @@ class LibraryTest {
 
         assertEquals(user, book.borrowedBy)
     }
+
+    @Test
+    @DisplayName("Given a book that is already borrowed, user should not be able to borrow it")
+    fun alreadyBorrowedBook() {
+        val book = Book("978-3-16-148410-0", User())
+        val user = User()
+
+        val library = Library()
+
+        library.borrow(book, user)
+
+        assert(user !== book.borrowedBy)
+    }
 }

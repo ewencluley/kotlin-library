@@ -8,6 +8,9 @@ import ewencluley.library.users.User
  */
 class Library {
     fun borrow(book: Book, user: User) {
+        if (book.borrowedBy !== null) {
+            return
+        }
         book.borrowedBy = user
     }
 }
