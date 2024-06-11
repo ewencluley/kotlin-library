@@ -10,4 +10,8 @@ class Catalogue(private val books: List<Book>) {
     fun findByIsbn(isbn: String): List<Book> {
         return books.filter { it.isbn == isbn }
     }
+
+    fun findBorrowed(): List<Book> {
+        return books.filter { it.borrowedBy !== null }
+    }
 }

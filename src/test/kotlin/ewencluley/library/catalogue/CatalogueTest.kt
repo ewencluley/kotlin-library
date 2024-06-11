@@ -1,5 +1,6 @@
 package ewencluley.library.catalogue
 
+import ewencluley.library.users.User
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -40,5 +41,41 @@ class CatalogueTest {
             listOf(Book("978-3-16-148410-0"), Book("978-3-16-148410-0")),
             result
         )
+    }
+
+    @Test
+    @DisplayName("Given no books, findBorrowed returns no results")
+    fun findBorrowedWithNoBooks() {
+        val catalogue = Catalogue(emptyList())
+        val result = catalogue.findBorrowed()
+        assert(result.isEmpty())
+    }
+
+    @Test
+    @DisplayName("Given some books none of which are borrowed, findBorrowed returns no results")
+    fun findBorrowedWithNoBorrowedBooks() {
+        val catalogue = Catalogue(
+            listOf(Book("978-3-16-148410-0"), Book("978-3-16-148410-0"), Book("999-9-99-999999-9"))
+        )
+        val result = catalogue.findBorrowed()
+        assert(result.isEmpty())
+    }
+
+    @Test
+    @DisplayName("Given some books some of which are borrowed, findBorrowed returns results")
+    fun findBorrowedWithSomeBorrowedBooks() {
+        val user1 = User()
+        val user2 = User()
+
+        val catalogue = Catalogue(listOf(
+            Book("978-3-16-148410-0", user1),
+            Book("978-3-16-148410-0"),
+            Book("999-9-99-999999-9", user2)
+        ))
+        val result = catalogue.findBorrowed()
+        assertEquals(listOf(
+            Book("978-3-16-148410-0", user1),
+            Book("999-9-99-999999-9", user2)
+        ), result)
     }
 }
