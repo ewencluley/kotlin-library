@@ -28,4 +28,14 @@ class TitleFilterTest {
         val result = filter.invoke(book)
         assertFalse(result)
     }
+
+    @Test
+    @DisplayName("Given book with matching title in different case, expect true ")
+    fun matchingTitleCaseInsensitive() {
+        val book = mockk<Book>()
+        every { book.title } returns "The Lathe of Heaven"
+        val filter = TitleFilter("the lathe of heaven")
+        val result = filter.invoke(book)
+        assertTrue(result)
+    }
 }
