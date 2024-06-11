@@ -25,9 +25,10 @@ class CatalogueTest {
     fun givenSingleMatchingBook() {
         val filter = mockk<Filter>()
         every { filter.invoke(any()) } returns true
-        val catalogue = Catalogue(listOf(Book("978-3-16-148410")))
+        val book = mockk<Book>()
+        val catalogue = Catalogue(listOf(book))
         val result = catalogue.find(filter)
-        assertEquals(listOf(Book("978-3-16-148410")), result)
+        assertEquals(listOf(book), result)
         verify(exactly = 1) { filter.invoke(any()) }
     }
 
@@ -36,7 +37,8 @@ class CatalogueTest {
     fun givenSingleNonMatchingBook() {
         val filter = mockk<Filter>()
         every { filter.invoke(any()) } returns false
-        val catalogue = Catalogue(listOf(Book("978-3-16-148410")))
+        val book = mockk<Book>()
+        val catalogue = Catalogue(listOf(book))
         val result = catalogue.find(filter)
         assert(result.isEmpty())
         verify(exactly = 1) { filter.invoke(any()) }
@@ -47,12 +49,15 @@ class CatalogueTest {
     fun multipleBooksThatMatchIsbn() {
         val filter = mockk<Filter>()
         every { filter.invoke(any()) } returns true andThen true andThen false
+        val book1 = mockk<Book>()
+        val book2 = mockk<Book>()
+        val book3 = mockk<Book>()
         val catalogue = Catalogue(
-            listOf(Book("978-3-16-148410-0"), Book("978-3-16-148410-0"), Book("999-9-99-999999-9"))
+            listOf(book1, book2, book3)
         )
         val result = catalogue.find(filter)
         assertEquals(
-            listOf(Book("978-3-16-148410-0"), Book("978-3-16-148410-0")),
+            listOf(book1, book2),
             result
         )
         verify(exactly = 3) { filter.invoke(any()) }

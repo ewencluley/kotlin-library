@@ -17,7 +17,8 @@ class ServiceTest {
         val library = mockk<Library>()
 
         val isbn = "978-3-16-148410-0"
-        val book = Book(isbn)
+        val book = mockk<Book>()
+        every { book.borrowedBy } returns null
 
         every { catalogue.find(any()) } returns listOf(book)
         every { library.borrow(book, Service.user) } returns Library.BorrowResult.Success
@@ -36,7 +37,8 @@ class ServiceTest {
         val library = mockk<Library>()
 
         val isbn = "978-3-16-148410-0"
-        val book = Book(isbn)
+        val book = mockk<Book>()
+        every { book.borrowedBy } returns null
 
         every { catalogue.find(any()) } returns listOf(book)
         every { library.borrow(book, Service.user) } returns Library.BorrowResult.Failure("Failed to borrow book")
@@ -55,8 +57,10 @@ class ServiceTest {
         val library = mockk<Library>()
 
         val isbn = "978-3-16-148410-0"
-        val book1 = Book(isbn, User())
-        val book2 = Book(isbn)
+        val book1 = mockk<Book>()
+        every { book1.borrowedBy } returns User()
+        val book2 = mockk<Book>()
+        every { book2.borrowedBy } returns null
 
         every { catalogue.find(any()) } returns listOf(book1, book2)
         every { library.borrow(book1, Service.user) } returns Library.BorrowResult.Failure("Failed to borrow book")
@@ -77,8 +81,10 @@ class ServiceTest {
         val library = mockk<Library>()
 
         val isbn = "978-3-16-148410-0"
-        val book1 = Book(isbn, User())
-        val book2 = Book(isbn, User())
+        val book1 = mockk<Book>()
+        every { book1.borrowedBy } returns User()
+        val book2 = mockk<Book>()
+        every { book2.borrowedBy } returns User()
 
         every { catalogue.find(any()) } returns listOf(book1, book2)
         every { library.borrow(book1, Service.user) } returns Library.BorrowResult.Failure("Failed to borrow book")
