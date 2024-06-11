@@ -10,12 +10,16 @@ import ewencluley.library.users.User
  */
 class Service(private val catalogue: Catalogue, private val library: Library) {
     fun borrowBook(isbn: String): Result {
-        val book = catalogue.findByIsbn(isbn)
-            .first()
+        try {
+            val book = catalogue.findByIsbn(isbn)
+                .first { it.borrowedBy === null }
 
-        return when(library.borrow(book, user)) {
-            is Library.BorrowResult.Success -> Result.BorrowSuccess(book)
-            is Library.BorrowResult.Failure -> Result.BorrowFailure
+            return when (library.borrow(book, user)) {
+                is Library.BorrowResult.Success -> Result.BorrowSuccess(book)
+                is Library.BorrowResult.Failure -> Result.BorrowFailure
+            }
+        } catch (e: NoSuchElementException) {
+            return Result.BorrowFailure
         }
     }
 
