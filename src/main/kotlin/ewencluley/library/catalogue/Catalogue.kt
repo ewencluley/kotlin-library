@@ -1,5 +1,7 @@
 package ewencluley.library.catalogue
 
+import ewencluley.library.catalogue.filters.Filter
+
 /**
  * A catalogue of books within a library.
  *
@@ -7,11 +9,7 @@ package ewencluley.library.catalogue
  */
 
 class Catalogue(private val books: List<Book>) {
-    fun findByIsbn(isbn: String): List<Book> {
-        return books.filter { it.isbn == isbn }
-    }
-
-    fun findBorrowed(): List<Book> {
-        return books.filter { it.borrowedBy !== null }
+    fun find(filter: Filter): List<Book> {
+        return books.filter(filter)
     }
 }

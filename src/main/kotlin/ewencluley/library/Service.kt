@@ -2,6 +2,7 @@ package ewencluley.library
 
 import ewencluley.library.catalogue.Book
 import ewencluley.library.catalogue.Catalogue
+import ewencluley.library.catalogue.filters.IsbnFilter
 import ewencluley.library.users.User
 
 /**
@@ -11,7 +12,7 @@ import ewencluley.library.users.User
 class Service(private val catalogue: Catalogue, private val library: Library) {
     fun borrowBook(isbn: String): Result {
         try {
-            val book = catalogue.findByIsbn(isbn)
+            val book = catalogue.find(IsbnFilter(isbn))
                 .first { it.borrowedBy === null }
 
             return when (library.borrow(book, user)) {

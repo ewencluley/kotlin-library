@@ -1,81 +1,60 @@
 package ewencluley.library.catalogue
 
-import ewencluley.library.users.User
+import ewencluley.library.catalogue.filters.Filter
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class CatalogueTest {
     @Test
-    @DisplayName("Given an empty catalogue, findByIsbn should not return any results")
+    @DisplayName("Given an empty catalogue, find should not return any results or call the filter")
     fun givenEmptyCatalogue() {
+        val filter = mockk<Filter>()
+        every { filter.invoke(any()) } returns true
         val catalogue = Catalogue(emptyList())
-        val result = catalogue.findByIsbn("978-3-16-148410-0")
+        val result = catalogue.find(filter)
         assert(result.isEmpty())
+        verify(exactly = 0) { filter.invoke(any()) }
     }
 
     @Test
-    @DisplayName("Given a catalogue with a single book that's ISBN matches the query, findByIsbn should return a result")
+    @DisplayName("Given a catalogue with a single book that matches the filter, find should return a single result")
     fun givenSingleMatchingBook() {
+        val filter = mockk<Filter>()
+        every { filter.invoke(any()) } returns true
         val catalogue = Catalogue(listOf(Book("978-3-16-148410")))
-        val result = catalogue.findByIsbn("978-3-16-148410")
+        val result = catalogue.find(filter)
         assertEquals(listOf(Book("978-3-16-148410")), result)
+        verify(exactly = 1) { filter.invoke(any()) }
     }
 
     @Test
-    @DisplayName("Given a catalogue with a single book that's ISBN doesn't match the query, findByIsbn should not return a result")
+    @DisplayName("Given a catalogue with a single book that doesn't match the filter, find should return no results")
     fun givenSingleNonMatchingBook() {
+        val filter = mockk<Filter>()
+        every { filter.invoke(any()) } returns false
         val catalogue = Catalogue(listOf(Book("978-3-16-148410")))
-        val result = catalogue.findByIsbn("123-4-56-789012")
+        val result = catalogue.find(filter)
         assert(result.isEmpty())
+        verify(exactly = 1) { filter.invoke(any()) }
     }
 
     @Test
-    @DisplayName("Given a catalogue with a multiple book that's ISBN match the query, findByIsbn should return all matching books")
+    @DisplayName("Given a catalogue with a multiple book that match the filter, find should return all matching books")
     fun multipleBooksThatMatchIsbn() {
+        val filter = mockk<Filter>()
+        every { filter.invoke(any()) } returns true andThen true andThen false
         val catalogue = Catalogue(
             listOf(Book("978-3-16-148410-0"), Book("978-3-16-148410-0"), Book("999-9-99-999999-9"))
         )
-        val result = catalogue.findByIsbn("978-3-16-148410-0")
+        val result = catalogue.find(filter)
         assertEquals(
             listOf(Book("978-3-16-148410-0"), Book("978-3-16-148410-0")),
             result
         )
-    }
-
-    @Test
-    @DisplayName("Given no books, findBorrowed returns no results")
-    fun findBorrowedWithNoBooks() {
-        val catalogue = Catalogue(emptyList())
-        val result = catalogue.findBorrowed()
-        assert(result.isEmpty())
-    }
-
-    @Test
-    @DisplayName("Given some books none of which are borrowed, findBorrowed returns no results")
-    fun findBorrowedWithNoBorrowedBooks() {
-        val catalogue = Catalogue(
-            listOf(Book("978-3-16-148410-0"), Book("978-3-16-148410-0"), Book("999-9-99-999999-9"))
-        )
-        val result = catalogue.findBorrowed()
-        assert(result.isEmpty())
-    }
-
-    @Test
-    @DisplayName("Given some books some of which are borrowed, findBorrowed returns results")
-    fun findBorrowedWithSomeBorrowedBooks() {
-        val user1 = User()
-        val user2 = User()
-
-        val catalogue = Catalogue(listOf(
-            Book("978-3-16-148410-0", user1),
-            Book("978-3-16-148410-0"),
-            Book("999-9-99-999999-9", user2)
-        ))
-        val result = catalogue.findBorrowed()
-        assertEquals(listOf(
-            Book("978-3-16-148410-0", user1),
-            Book("999-9-99-999999-9", user2)
-        ), result)
+        verify(exactly = 3) { filter.invoke(any()) }
     }
 }
