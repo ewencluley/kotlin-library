@@ -30,4 +30,13 @@ class AuthorFilterTest {
         assertFalse(result)
     }
 
+    @Test
+    @DisplayName("Given book with matching author in differing case, returns true")
+    fun testBookWithMatchingAuthorCaseInsensitive() {
+        val book = mockk<Book>()
+        every { book.author } returns "Frank Herbert"
+        val filter = AuthorFilter("frank herbert")
+        val result = filter.invoke(book)
+        assertTrue(result)
+    }
 }
